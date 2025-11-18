@@ -1,0 +1,43 @@
+# Backend (Spring Boot)
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/.env
+backend/**/*.class
+backend/**/*.jar
+backend/**/*.war
+
+# Flutter
+flutter_app/.dart_tool/
+flutter_app/.flutter-plugins
+flutter_app/.flutter-plugins-dependencies
+flutter_app/.packages
+flutter_app/.pub-cache/
+flutter_app/.pub/
+flutter_app/build/
+flutter_app/.idea/
+flutter_app/*.iml
+flutter_app/**/*.lock
+
+# React
+admin-web/node_modules/
+admin-web/build/
+admin-web/.env
+admin-web/.env.local
+admin-web/.env.production.local
+admin-web/npm-debug.log*
+admin-web/yarn-debug.log*
+admin-web/yarn-error.log*
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+
