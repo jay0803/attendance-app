@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
 import '../providers/auth_provider.dart';
+import '../services/api_service.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -44,6 +46,45 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Text(e.toString().replaceAll('Exception: ', '')),
             backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _naverLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // 네이버 로그인 실행
+      final NaverLoginResult result = await FlutterNaverLogin.logIn();
+
+      if (result.status == NaverLoginStatus.loggedIn) {
+        // 네이버 로그인 성공, 액세스 토큰으로 백엔드 인증
+        await context.read<AuthProvider>().naverLogin(result.accessToken!.accessToken);
+      } else if (result.status == NaverLoginStatus.error) {
+        throw Exception('네이버 로그인에 실패했습니다: ${result.errorMessage}');
+      } else {
+        // 사용자가 취소
+        return;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString().replaceAll('Exception: ', ''),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
@@ -155,6 +196,37 @@ class _LoginScreenState extends State<LoginScreen> {
                             '로그인',
                             style: TextStyle(fontSize: 16),
                           ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 구분선
+                  const Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text('또는'),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 네이버 로그인 버튼
+                  OutlinedButton.icon(
+                    onPressed: _isLoading ? null : _naverLogin,
+                    icon: const Icon(Icons.login, color: Color(0xFF03C75A)),
+                    label: const Text(
+                      '네이버로 로그인',
+                      style: TextStyle(color: Color(0xFF03C75A)),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: Color(0xFF03C75A)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
 

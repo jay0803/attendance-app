@@ -98,6 +98,7 @@ function AttendanceList({ setIsAuthenticated }) {
         <nav>
           <Link to="/dashboard">대시보드</Link>
           <Link to="/attendance" className="active">출석 기록</Link>
+          <Link to="/pending-users">사전 등록 관리</Link>
         </nav>
       </div>
 

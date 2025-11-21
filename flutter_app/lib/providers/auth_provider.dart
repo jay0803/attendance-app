@@ -79,6 +79,25 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  // 네이버 로그인
+  Future<void> naverLogin(String accessToken) async {
+    try {
+      final response = await ApiService.naverLogin(accessToken);
+
+      // 토큰 저장
+      await StorageHelper.saveToken(response['token']);
+
+      // 사용자 정보 저장
+      await StorageHelper.saveUserInfo(response);
+
+      _user = User.fromJson(response);
+      _isAuthenticated = true;
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // 로그아웃
   Future<void> logout() async {
     await StorageHelper.clearAll();

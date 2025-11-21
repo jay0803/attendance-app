@@ -56,6 +56,39 @@ public class ServiceService {
                 })
                 .collect(Collectors.toList());
     }
+    
+    /**
+     * 예배 생성
+     */
+    @Transactional
+    public com.church.attendance.entity.Service createService(
+            String name, 
+            LocalDateTime serviceTime, 
+            com.church.attendance.entity.Service.ServiceType type) {
+        
+        com.church.attendance.entity.Service service = com.church.attendance.entity.Service.builder()
+                .name(name)
+                .serviceTime(serviceTime)
+                .type(type)
+                .active(true)
+                .build();
+        
+        return serviceRepository.save(service);
+    }
+    
+    /**
+     * 특정 날짜에 예배가 이미 존재하는지 확인
+     */
+    @Transactional(readOnly = true)
+    public boolean existsServiceOnDate(LocalDateTime date) {
+        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = date.toLocalDate().atTime(23, 59, 59);
+        
+        List<com.church.attendance.entity.Service> services = serviceRepository.findActiveServicesBetween(
+                startOfDay, endOfDay);
+        
+        return !services.isEmpty();
+    }
 }
 
 

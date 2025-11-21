@@ -100,6 +100,7 @@ function Dashboard({ setIsAuthenticated }) {
         <nav>
           <Link to="/dashboard" className="active">대시보드</Link>
           <Link to="/attendance">출석 기록</Link>
+          <Link to="/pending-users">사전 등록 관리</Link>
         </nav>
       </div>
 

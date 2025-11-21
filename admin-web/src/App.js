@@ -4,6 +4,7 @@ import './App.css';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AttendanceList from './pages/AttendanceList';
+import PendingUsers from './pages/PendingUsers';
 import { getToken } from './utils/auth';
 
 function App() {
@@ -40,6 +41,12 @@ function App() {
           path="/attendance" 
           element={
             isAuthenticated ? <AttendanceList setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/pending-users" 
+          element={
+            isAuthenticated ? <PendingUsers setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />
           } 
         />
         <Route path="/" element={<Navigate to="/dashboard" />} />

@@ -2,6 +2,7 @@ package com.church.attendance.controller;
 
 import com.church.attendance.dto.AuthResponse;
 import com.church.attendance.dto.LoginRequest;
+import com.church.attendance.dto.NaverLoginRequest;
 import com.church.attendance.dto.RegisterRequest;
 import com.church.attendance.service.AuthService;
 import jakarta.validation.Valid;
@@ -25,6 +26,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/naver/login")
+    public ResponseEntity<AuthResponse> naverLogin(@Valid @RequestBody NaverLoginRequest request) {
+        AuthResponse response = authService.naverLogin(request);
         return ResponseEntity.ok(response);
     }
 }

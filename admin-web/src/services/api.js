@@ -53,5 +53,12 @@ export const serviceAPI = {
   getActive: () => api.get('/services'),
 };
 
+// 사전 등록 사용자 API
+export const pendingUserAPI = {
+  getAll: () => api.get('/admin/pending-users'),
+  create: (data) => api.post('/admin/pending-users', data),
+  delete: (id) => api.delete(`/admin/pending-users/${id}`),
+};
+
 export default api;
 

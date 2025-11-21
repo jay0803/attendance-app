@@ -55,10 +55,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = '회원가입에 실패했습니다';
+        
+        // 에러 메시지 추출
+        final errorString = e.toString();
+        if (errorString.contains('Exception: ')) {
+          errorMessage = errorString.replaceAll('Exception: ', '');
+        } else if (errorString.contains('사전 등록')) {
+          errorMessage = errorString.replaceAll('Exception: ', '');
+        } else {
+          errorMessage = errorString;
+        }
+        
+        // 사용자 친화적인 메시지로 변환
+        if (errorMessage.contains('사전 등록')) {
+          errorMessage = '사전 등록되지 않은 사용자입니다.\n관리자에게 문의하세요.';
+        } else if (errorMessage.contains('이미 존재')) {
+          errorMessage = '이미 사용 중인 사용자명입니다.';
+        } else if (errorMessage.contains('전화번호 또는 이메일')) {
+          errorMessage = '전화번호 또는 이메일 중 하나는 필수입니다.';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
+            content: Text(
+              errorMessage,
+              style: const TextStyle(fontSize: 14),
+            ),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: '확인',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
           ),
         );
       }
@@ -197,8 +227,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     labelText: '전화번호',
                     prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(),
+                    helperText: '전화번호 또는 이메일 중 하나는 필수입니다',
                   ),
                   keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    // 전화번호와 이메일이 모두 비어있는지 확인
+                    if ((value == null || value.trim().isEmpty) &&
+                        (_emailController.text.trim().isEmpty)) {
+                      return '전화번호 또는 이메일 중 하나는 필수입니다';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -209,9 +248,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     labelText: '이메일',
                     prefixIcon: Icon(Icons.email),
                     border: OutlineInputBorder(),
+                    helperText: '전화번호 또는 이메일 중 하나는 필수입니다',
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
+                    // 전화번호와 이메일이 모두 비어있는지 확인
+                    if ((value == null || value.trim().isEmpty) &&
+                        (_phoneController.text.trim().isEmpty)) {
+                      return '전화번호 또는 이메일 중 하나는 필수입니다';
+                    }
                     if (value != null && value.isNotEmpty) {
                       if (!value.contains('@')) {
                         return '올바른 이메일 형식이 아닙니다';

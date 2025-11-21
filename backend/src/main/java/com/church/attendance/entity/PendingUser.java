@@ -9,24 +9,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "pending_users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class PendingUser {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false, unique = true, length = 50)
-    private String username;
-    
-    @Column(nullable = false)
-    private String password;
     
     @Column(nullable = false, length = 50)
     private String name;
@@ -37,15 +31,11 @@ public class User {
     @Column(length = 100)
     private String email;
     
-    @Column(length = 100)
-    private String naverId;  // 네이버 로그인 ID
-    
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private Role role = Role.USER;
+    @Column(length = 500)
+    private String notes;  // 비고
     
     @Column(nullable = false)
-    private Boolean active = true;
+    private Boolean active = true;  // 활성화 여부
     
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -54,11 +44,5 @@ public class User {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-    
-    public enum Role {
-        USER,
-        ADMIN
-    }
 }
-
 

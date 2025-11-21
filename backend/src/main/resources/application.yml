@@ -35,6 +35,11 @@ attendance:
   activation-minutes-before: ${ATTENDANCE_ACTIVATION_MINUTES:30}  # 예배 30분 전부터 활성화
   late-grace-minutes: ${ATTENDANCE_LATE_GRACE_MINUTES:10}  # 예배 시작 후 10분까지 정상 출석
 
+# 네이버 OAuth2 설정
+naver:
+  client-id: ${NAVER_CLIENT_ID:}
+  client-secret: ${NAVER_CLIENT_SECRET:}
+
 # 서버 설정
 server:
   port: ${SERVER_PORT:8080}

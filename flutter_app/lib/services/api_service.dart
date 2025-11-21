@@ -54,16 +54,24 @@ class ApiService {
         'username': username,
         'password': password,
         'name': name,
-        'phone': phone,
-        'email': email,
+        'phone': phone?.trim().isEmpty == true ? null : phone?.trim(),
+        'email': email?.trim().isEmpty == true ? null : email?.trim(),
       }),
     );
 
     if (response.statusCode == 200) {
       return json.decode(utf8.decode(response.bodyBytes));
     } else {
-      final error = json.decode(utf8.decode(response.bodyBytes));
-      throw Exception(error['message'] ?? '회원가입에 실패했습니다');
+      try {
+        final errorBody = json.decode(utf8.decode(response.bodyBytes));
+        final errorMessage = errorBody['message'] ?? '회원가입에 실패했습니다';
+        throw Exception(errorMessage);
+      } catch (e) {
+        if (e is Exception) {
+          rethrow;
+        }
+        throw Exception('회원가입에 실패했습니다. 네트워크를 확인해주세요.');
+      }
     }
   }
 
@@ -130,6 +138,32 @@ class ApiService {
       return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('출석 기록을 불러오는데 실패했습니다');
+    }
+  }
+
+  // 네이버 로그인
+  static Future<Map<String, dynamic>> naverLogin(String accessToken) async {
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}/auth/naver/login'),
+      headers: _getHeaders(includeAuth: false),
+      body: json.encode({
+        'accessToken': accessToken,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(utf8.decode(response.bodyBytes));
+    } else {
+      try {
+        final errorBody = json.decode(utf8.decode(response.bodyBytes));
+        final errorMessage = errorBody['message'] ?? '네이버 로그인에 실패했습니다';
+        throw Exception(errorMessage);
+      } catch (e) {
+        if (e is Exception) {
+          rethrow;
+        }
+        throw Exception('네이버 로그인에 실패했습니다. 네트워크를 확인해주세요.');
+      }
     }
   }
 }

@@ -126,6 +126,58 @@ public class AttendanceService {
                 .map(AttendanceResponse::from)
                 .collect(Collectors.toList());
     }
+    
+    /**
+     * 예배 시작 후 10분 경과 시 미출석 사용자 자동 지각 처리
+     * 
+     * @param service 처리할 예배
+     * @return 자동 지각 처리된 사용자 수
+     */
+    @Transactional
+    public int processAutoLateAttendance(Service service) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime lateThreshold = service.getServiceTime().plusMinutes(lateGraceMinutes);
+        
+        // 예배 시작 후 10분이 지났는지 확인
+        if (now.isBefore(lateThreshold)) {
+            return 0; // 아직 10분이 지나지 않음
+        }
+        
+        // 예배 시작 후 11분이 지났다면 이미 처리된 것으로 간주 (중복 처리 방지)
+        LocalDateTime maxThreshold = service.getServiceTime().plusMinutes(lateGraceMinutes + 1);
+        if (now.isAfter(maxThreshold)) {
+            return 0; // 이미 처리 시간이 지남
+        }
+        
+        // 활성화된 일반 사용자 조회 (관리자 제외)
+        List<User> activeUsers = userRepository.findByActiveTrueAndRole(User.Role.USER);
+        
+        int processedCount = 0;
+        
+        for (User user : activeUsers) {
+            // 이미 출석 체크했는지 확인
+            if (attendanceRepository.existsByUserAndService(user, service)) {
+                continue; // 이미 출석 체크함
+            }
+            
+            // 자동 지각 처리: LATE 상태로 출석 기록 생성
+            // GPS 좌표는 교회 좌표 사용, 거리는 0으로 설정
+            Attendance attendance = Attendance.builder()
+                    .user(user)
+                    .service(service)
+                    .status(Attendance.AttendanceStatus.LATE)
+                    .latitude(churchLatitude)
+                    .longitude(churchLongitude)
+                    .distance(0.0)
+                    .notes("자동 지각 처리 (예배 시작 후 10분 경과)")
+                    .build();
+            
+            attendanceRepository.save(attendance);
+            processedCount++;
+        }
+        
+        return processedCount;
+    }
 }
 
 
